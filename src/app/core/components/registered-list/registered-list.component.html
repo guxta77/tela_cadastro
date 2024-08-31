@@ -1,0 +1,22 @@
+<div class="registered-container">
+    <h2>Itens Cadastrados</h2>
+  
+    <ul>
+      <li *ngFor="let item of items; let i = index">
+        <div *ngIf="editingIndex === i">
+          <input [(ngModel)]="editForm.name" placeholder="Nome" />
+          <input [(ngModel)]="editForm.email" placeholder="Email" />
+          <button (click)="saveEdit()" class="edit-button">Salvar</button>
+          <button (click)="cancelEdit()" class="edit-button">Cancelar</button>
+        </div>
+        <div *ngIf="editingIndex !== i">
+          {{ item.name }} - {{ item.email }}
+          <button (click)="startEdit(i)" class="edit-button">Editar</button>
+          <button (click)="deleteItem(i)" class="delete-button">Deletar</button>
+        </div>
+      </li>
+    </ul>
+  
+    <app-back-button (back)="goToInput()" class="back-button"></app-back-button>
+  </div>
+  

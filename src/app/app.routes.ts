@@ -1,3 +1,30 @@
-import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { authRoutes } from './features/welcome/routes';
+import { registeredRoutes } from './features/registered/routes';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+
+    {
+        path: '',
+            loadComponent: () =>
+                import('./core/layouts//welcome-layout/welcome-layout.component').then(
+                    (m) => m.WelcomeLayoutComponent
+                ),
+            children: [...authRoutes]
+    },
+    {
+        path: '',
+        loadComponent: () =>
+            import('./core/layouts/registered-layout/registered-layout.component').then(
+                (m) => m.RegisteredLayoutComponent
+            ),
+        children: [...registeredRoutes]
+    },
+    { path: '**', redirectTo: '/welcome', pathMatch: 'full'},
+];
+@NgModule({
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
+})
+export class AppRoutingModule {}

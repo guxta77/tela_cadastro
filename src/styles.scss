@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+@font-face {
+    font-family: "Exo";
+    src: url(assets/fonts/Exo/Exo-Italic-VariableFont_wght.ttf);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}   
