@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ItemService } from '../registered-list/services/item.service';
-import { Router } from '@angular/router';       // Importe o Router
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-input',
@@ -13,27 +13,32 @@ import { Router } from '@angular/router';       // Importe o Router
 })
 export class InputComponent implements OnInit {
   loginForm!: FormGroup;
+  genres = ['Rock', 'Pop', 'Jazz', 'Classical', 'Hip-Hop'];
 
-  constructor(private fb: FormBuilder, private itemService: ItemService, private router: Router) {}
+  constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
+      musicGenre: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      age: ['', [Validators.required, Validators.min(0), Validators.max(99)]]
     });
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
       const formValue = this.loginForm.value;
-      this.itemService.addItem({
-        name: formValue.username,
-        email: formValue.password
-      });
-      this.loginForm.reset();
-      this.router.navigate(['/registered']);  // Redireciona para a tela de itens cadastrados
+      localStorage.setItem('userForm', JSON.stringify(formValue));
+      this.router.navigate(['/registered']);
     } else {
       console.log('Formulário inválido');
     }
+  }
+
+  get f() {
+    return this.loginForm.controls;
   }
 }

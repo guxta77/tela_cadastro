@@ -13,11 +13,13 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./registered-list.component.scss']
 })
 export class RegisteredListComponent implements OnInit {
-  items: { name: string; email: string }[] = [];
+  items: any[] = [];
   editingIndex: number | null = null;
-  editForm = { name: '', email: '' };
+  editForm: any = { username: '', password: '', musicGenre: '', email: '', phone: '', age: '' };
+  musicGenres: string[] = ['Rock', 'Pop', 'Jazz', 'Classical', 'Hip-Hop', 'Country'];
 
   constructor(private itemService: ItemService, private router: Router) {}
+
 
   ngOnInit(): void {
     this.items = this.itemService.getItems();
@@ -31,13 +33,15 @@ export class RegisteredListComponent implements OnInit {
   saveEdit(): void {
     if (this.editingIndex !== null) {
       this.itemService.updateItem(this.editingIndex, this.editForm);
-      this.items = this.itemService.getItems();
       this.editingIndex = null;
+      this.editForm = { username: '', password: '', musicGenre: '', email: '', phone: '', age: '' };
+      this.items = this.itemService.getItems();
     }
   }
 
   cancelEdit(): void {
     this.editingIndex = null;
+    this.editForm = { username: '', password: '', musicGenre: '', email: '', phone: '', age: '' };
   }
 
   deleteItem(index: number): void {
