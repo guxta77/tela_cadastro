@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { ItemService } from './services/item.service';
 import { BackButtonComponent } from '../back-button/back-button.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registered-list',
@@ -15,11 +15,9 @@ import { CommonModule } from '@angular/common';
 export class RegisteredListComponent implements OnInit {
   items: any[] = [];
   editingIndex: number | null = null;
-  editForm: any = { username: '', password: '', musicGenre: '', email: '', phone: '', age: '' };
-  musicGenres: string[] = ['Rock', 'Pop', 'Jazz', 'Classical', 'Hip-Hop', 'Country'];
+  editForm: any = {};
 
   constructor(private itemService: ItemService, private router: Router) {}
-
 
   ngOnInit(): void {
     this.items = this.itemService.getItems();
@@ -34,14 +32,14 @@ export class RegisteredListComponent implements OnInit {
     if (this.editingIndex !== null) {
       this.itemService.updateItem(this.editingIndex, this.editForm);
       this.editingIndex = null;
-      this.editForm = { username: '', password: '', musicGenre: '', email: '', phone: '', age: '' };
+      this.editForm = {};
       this.items = this.itemService.getItems();
     }
   }
 
   cancelEdit(): void {
     this.editingIndex = null;
-    this.editForm = { username: '', password: '', musicGenre: '', email: '', phone: '', age: '' };
+    this.editForm = {};
   }
 
   deleteItem(index: number): void {
@@ -50,6 +48,6 @@ export class RegisteredListComponent implements OnInit {
   }
 
   goToInput(): void {
-    this.router.navigate(['/input']);
+    this.router.navigate(['/welcome']);
   }
 }

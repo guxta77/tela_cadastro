@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ItemService } from '../registered-list/services/item.service';
 
 @Component({
   selector: 'app-input',
@@ -13,32 +13,41 @@ import { ReactiveFormsModule } from '@angular/forms';
 })
 export class InputComponent implements OnInit {
   loginForm!: FormGroup;
-  genres = ['Rock', 'Pop', 'Jazz', 'Classical', 'Hip-Hop'];
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(private fb: FormBuilder, private router: Router, private itemService: ItemService) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      musicGenre: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      age: ['', [Validators.required, Validators.min(0), Validators.max(99)]]
+      phone: ['', Validators.required],
+      age: ['', [Validators.required, Validators.min(16), Validators.max(99)]],
+      musicGenre: ['', Validators.required]
+    });
+
+    this.loginForm.valueChanges.subscribe(() => {
+      this.updateSubmitButtonState();
     });
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
       const formValue = this.loginForm.value;
-      localStorage.setItem('userForm', JSON.stringify(formValue));
+      this.itemService.addItem(formValue);
       this.router.navigate(['/registered']);
     } else {
       console.log('Formulário inválido');
     }
   }
 
-  get f() {
-    return this.loginForm.controls;
+  get isSubmitDisabled(): boolean {
+    return this.loginForm.invalid;
+  }
+
+  private updateSubmitButtonState(): void {
+    const controls = this.loginForm.controls;
+    const allFilled = Object.keys(controls).every(key => controls[key].value.trim() !== '');
+    this.loginForm.patchValue({ allFilled });
   }
 }

@@ -1,26 +1,30 @@
-<div class="registered-container">
+<div class="background-container">
+  <div class="registered-container">
     <h2>Itens Cadastrados</h2>
     <ul>
       <li *ngFor="let item of items; let i = index">
         <div *ngIf="editingIndex === i">
           <input [(ngModel)]="editForm.username" placeholder="Usuário" />
           <input [(ngModel)]="editForm.password" placeholder="Senha" type="password" />
-          <select [(ngModel)]="editForm.musicGenre">
-            <option *ngFor="let genre of musicGenres" [value]="genre">{{ genre }}</option>
-          </select>
           <input [(ngModel)]="editForm.email" placeholder="Email" />
           <input [(ngModel)]="editForm.phone" placeholder="Telefone" />
-          <input [(ngModel)]="editForm.age" placeholder="Idade" type="number" max="99" />
+          <input [(ngModel)]="editForm.age" placeholder="Idade" type="number" />
+          <input [(ngModel)]="editForm.musicGenre" placeholder="Gênero Musical" />
           <button (click)="saveEdit()" class="edit-button">Salvar</button>
           <button (click)="cancelEdit()" class="edit-button">Cancelar</button>
         </div>
         <div *ngIf="editingIndex !== i">
-          {{ item.username }} - {{ item.musicGenre }} - {{ item.email }} - {{ item.phone }} - {{ item.age }}
+          <p><strong>Usuário:</strong> {{ item.username }}</p>
+          <p><strong>Senha:</strong> {{ item.password }}</p>
+          <p><strong>Email:</strong> {{ item.email }}</p>
+          <p><strong>Telefone:</strong> {{ item.phone }}</p>
+          <p><strong>Idade:</strong> {{ item.age }}</p>
+          <p><strong>Gênero Musical:</strong> {{ item.musicGenre }}</p>
           <button (click)="startEdit(i)" class="edit-button">Editar</button>
           <button (click)="deleteItem(i)" class="delete-button">Deletar</button>
         </div>
       </li>
     </ul>
-    <app-back-button (back)="goToInput()" class="back-button"></app-back-button>
+    <app-back-button (back)="goToInput()"></app-back-button>
   </div>
-  
+</div>
