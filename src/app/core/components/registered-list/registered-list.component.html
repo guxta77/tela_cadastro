@@ -4,14 +4,16 @@
     <ul>
       <li *ngFor="let item of items; let i = index">
         <div *ngIf="editingIndex === i">
-          <input [(ngModel)]="editForm.username" placeholder="Usuário" />
-          <input [(ngModel)]="editForm.password" placeholder="Senha" type="password" />
-          <input [(ngModel)]="editForm.email" placeholder="Email" />
-          <input [(ngModel)]="editForm.phone" placeholder="Telefone" />
-          <input [(ngModel)]="editForm.age" placeholder="Idade" type="number" />
-          <input [(ngModel)]="editForm.musicGenre" placeholder="Gênero Musical" />
-          <button (click)="saveEdit()" class="edit-button">Salvar</button>
-          <button (click)="cancelEdit()" class="edit-button">Cancelar</button>
+          <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
+            <input formControlName="username" placeholder="Usuário" />
+            <input formControlName="password" placeholder="Senha" type="password" />
+            <input formControlName="email" placeholder="Email" />
+            <input formControlName="phone" placeholder="Telefone" />
+            <input formControlName="age" placeholder="Idade" type="number" />
+            <input formControlName="musicGenre" placeholder="Gênero Musical" />
+            <button type="submit" class="edit-button">Salvar</button>
+            <button type="button" (click)="cancelEdit()" class="edit-button">Cancelar</button>
+          </form>
         </div>
         <div *ngIf="editingIndex !== i">
           <p><strong>Usuário:</strong> {{ item.username }}</p>
