@@ -13,6 +13,8 @@ import { ItemService } from '../registered-list/services/item.service';
 })
 export class InputComponent implements OnInit {
   loginForm!: FormGroup;
+  isSubmitDisabled = true;
+  passwordType: 'password' | 'text' = 'password';
 
   constructor(private fb: FormBuilder, private router: Router, private itemService: ItemService) {}
 
@@ -20,14 +22,14 @@ export class InputComponent implements OnInit {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', Validators.required],
       phone: ['', Validators.required],
       age: ['', [Validators.required, Validators.min(16), Validators.max(99)]],
       musicGenre: ['', Validators.required]
     });
 
     this.loginForm.valueChanges.subscribe(() => {
-      this.updateSubmitButtonState();
+      this.isSubmitDisabled = !this.loginForm.valid;
     });
   }
 
@@ -35,19 +37,20 @@ export class InputComponent implements OnInit {
     if (this.loginForm.valid) {
       const formValue = this.loginForm.value;
       this.itemService.addItem(formValue);
-      this.router.navigate(['/registered']);
+      
+      document.body.classList.add('inverted-gradient');
+      
+      setTimeout(() => {
+        this.router.navigate(['/registered']);
+        document.body.classList.remove('inverted-gradient');
+      }, 500);
     } else {
       console.log('Formulário inválido');
     }
   }
 
-  get isSubmitDisabled(): boolean {
-    return this.loginForm.invalid;
-  }
-
-  private updateSubmitButtonState(): void {
-    const controls = this.loginForm.controls;
-    const allFilled = Object.keys(controls).every(key => controls[key].value.trim() !== '');
-    this.loginForm.patchValue({ allFilled });
+  togglePasswordVisibility(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    this.passwordType = checkbox.checked ? 'text' : 'password';
   }
 }

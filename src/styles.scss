@@ -7,3 +7,13 @@ html, body {
     height: 100%;
     margin: 0;
 }   
+
+
+body {
+    transition: background 0.5s ease-in-out;
+  }
+  
+  .inverted-gradient {
+    background: linear-gradient(90deg, rgba(0,136,255,1) 0%, rgba(29,185,84,1) 100%);
+  }
+  

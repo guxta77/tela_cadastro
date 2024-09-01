@@ -2,41 +2,31 @@
   <div>
     <label for="username">Usuário:</label>
     <input id="username" formControlName="username" type="text" placeholder="Digite seu usuário">
-    <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-      <small>Este campo é obrigatório.</small>
-    </div>
   </div>
 
   <div>
     <label for="password">Senha:</label>
-    <input id="password" formControlName="password" type="password" placeholder="Digite sua senha">
-    <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-      <small>Este campo é obrigatório.</small>
+    <input id="password" [type]="passwordType" formControlName="password" placeholder="Digite sua senha">
+    <div class="password-checkbox">
+      <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
+      <label for="showPassword">Mostrar senha</label>
     </div>
   </div>
 
   <div>
     <label for="email">Email:</label>
     <input id="email" formControlName="email" type="email" placeholder="Digite seu email">
-    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-      <small *ngIf="loginForm.get('email')?.errors?.['required']">Este campo é obrigatório.</small>
-      <small *ngIf="loginForm.get('email')?.errors?.['email']">Digite um email válido.</small>
-    </div>
   </div>
 
   <div>
     <label for="phone">Telefone:</label>
     <input id="phone" formControlName="phone" type="text" placeholder="Digite seu telefone">
-    <div *ngIf="loginForm.get('phone')?.invalid && loginForm.get('phone')?.touched">
-      <small>Este campo é obrigatório.</small>
-    </div>
   </div>
 
   <div>
     <label for="age">Idade:</label>
     <input id="age" formControlName="age" type="number" placeholder="Digite sua idade">
     <div *ngIf="loginForm.get('age')?.invalid && loginForm.get('age')?.touched">
-      <small *ngIf="loginForm.get('age')?.errors?.['required']">Este campo é obrigatório.</small>
       <small *ngIf="loginForm.get('age')?.errors?.['min']">Idade mínima é 16.</small>
       <small *ngIf="loginForm.get('age')?.errors?.['max']">Idade máxima é 99.</small>
     </div>
@@ -51,9 +41,6 @@
       <option value="jazz">Jazz</option>
       <option value="classical">Clássica</option>
     </select>
-    <div *ngIf="loginForm.get('musicGenre')?.invalid && loginForm.get('musicGenre')?.touched">
-      <small>Este campo é obrigatório.</small>
-    </div>
   </div>
 
   <button type="submit" [disabled]="isSubmitDisabled">Cadastrar</button>

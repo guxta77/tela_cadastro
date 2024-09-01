@@ -23,6 +23,29 @@ input, select {
   width: 100%;
 }
 
+.password-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.password-checkbox input[type="checkbox"] {
+  margin-right: 0.5rem;
+  width: auto;
+  vertical-align: middle;
+}
+
+.password-checkbox label {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
 button {
   width: 100%;
   padding: 0.5rem;
@@ -44,7 +67,10 @@ button:enabled:hover {
   background-color: #0056b3;
 }
 
-
 small {
   color: red;
+}
+
+input[type="checkbox"] {
+  margin: 0;
 }
