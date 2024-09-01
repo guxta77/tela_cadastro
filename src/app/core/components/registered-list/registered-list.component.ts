@@ -18,7 +18,6 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   editingIndex: number | null = null;
   editForm: FormGroup;
   private itemsSubscription: Subscription = new Subscription();
-  private items: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -37,11 +36,7 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
     this.items$ = this.itemService.getItems();
   }
 
-  ngOnInit(): void {
-    this.itemsSubscription.add(
-      this.items$.subscribe(items => this.items = items)
-    );
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.itemsSubscription.unsubscribe();
@@ -49,19 +44,22 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
 
   startEdit(index: number): void {
     this.editingIndex = index;
-    this.editForm.patchValue(this.items[index]);
+    // Subscribe to items$ to get the current items
+    this.items$.subscribe(items => {
+      const item = items[index];
+      if (item) {
+        this.editForm.patchValue(item);
+      }
+    });
   }
 
   saveEdit(): void {
     if (this.editForm.valid && this.editingIndex !== null) {
       const updatedItem = this.editForm.value;
-      const id = this.items[this.editingIndex]?.id;
+      const id = this.editForm.value.id; // Obter o ID diretamente do formulário
       if (id) {
         this.itemService.updateItem(id, updatedItem).then(() => {
           this.editingIndex = null;
-          this.itemService.getItems().subscribe(updatedItems => {
-            this.items = updatedItems;
-          });
         });
       }
     }
@@ -72,14 +70,13 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   }
 
   deleteItem(index: number): void {
-    const id = this.items[index]?.id;
-    if (id) {
-      this.itemService.deleteItem(id).then(() => {
-        this.itemService.getItems().subscribe(updatedItems => {
-          this.items = updatedItems;
+    this.items$.subscribe(items => {
+      const id = items[index]?.id;
+      if (id) {
+        this.itemService.deleteItem(id).then(() => {
         });
-      });
-    }
+      }
+    });
   }
 
   goToInput(): void {

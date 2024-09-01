@@ -1,37 +1,47 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../../../firebase-config';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemService {
-
   private itemsCollection = collection(firestore, 'items');
+  private itemsSubject = new BehaviorSubject<any[]>([]);
 
-  constructor() {}
+  constructor() {
+    this.loadItems();
+  }
 
-  getItems(): Observable<any[]> {
-    return new Observable(observer => {
-      getDocs(this.itemsCollection).then(querySnapshot => {
-        const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        observer.next(items);
-      }).catch(error => observer.error(error));
+  private loadItems(): void {
+    getDocs(this.itemsCollection).then(querySnapshot => {
+      const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      this.itemsSubject.next(items);
     });
   }
 
-  addItem(item: any) {
-    return addDoc(this.itemsCollection, item);
+  getItems(): Observable<any[]> {
+    return this.itemsSubject.asObservable();
   }
 
-  updateItem(id: string, item: any) {
-    const itemDoc = doc(firestore, `items/${id}`);
-    return updateDoc(itemDoc, item);
+  addItem(item: any): Promise<void> {
+    return addDoc(this.itemsCollection, item).then(() => {
+      this.loadItems();
+    });
   }
 
-  deleteItem(id: string) {
+  updateItem(id: string, item: any): Promise<void> {
     const itemDoc = doc(firestore, `items/${id}`);
-    return deleteDoc(itemDoc);
+    return updateDoc(itemDoc, item).then(() => {
+      this.loadItems();
+    });
+  }
+
+  deleteItem(id: string): Promise<void> {
+    const itemDoc = doc(firestore, `items/${id}`);
+    return deleteDoc(itemDoc).then(() => {
+      this.loadItems();
+    });
   }
 }
