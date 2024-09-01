@@ -6,8 +6,8 @@
 
   <div>
     <label for="password">Senha:</label>
-    <input id="password" [type]="passwordType" formControlName="password" placeholder="Digite sua senha">
-    <div class="password-checkbox">
+    <div class="password-container">
+      <input id="password" [type]="passwordType" formControlName="password" placeholder="Digite sua senha">
       <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
       <label for="showPassword">Mostrar senha</label>
     </div>
@@ -43,5 +43,9 @@
     </select>
   </div>
 
-  <button type="submit" [disabled]="isSubmitDisabled">Cadastrar</button>
+  <button type="submit" [disabled]="isSubmitDisabled || isSubmitting">Cadastrar</button>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
 </form>

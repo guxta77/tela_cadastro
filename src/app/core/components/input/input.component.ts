@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ItemService } from '../registered-list/services/item.service';
@@ -15,17 +15,19 @@ export class InputComponent implements OnInit {
   loginForm!: FormGroup;
   isSubmitDisabled = true;
   passwordType: 'password' | 'text' = 'password';
+  isSubmitting = false;
+  errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private router: Router, private itemService: ItemService) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-      email: ['', Validators.required],
-      phone: ['', Validators.required],
-      age: ['', [Validators.required, Validators.min(16), Validators.max(99)]],
-      musicGenre: ['', Validators.required]
+      username: [''],
+      password: [''],
+      email: [''],
+      phone: [''],
+      age: [''],
+      musicGenre: ['']
     });
 
     this.loginForm.valueChanges.subscribe(() => {
@@ -33,19 +35,29 @@ export class InputComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.loginForm.valid) {
+      this.isSubmitting = true;
+      this.errorMessage = null;
+
       const formValue = this.loginForm.value;
-      this.itemService.addItem(formValue);
-      
-      document.body.classList.add('inverted-gradient');
-      
-      setTimeout(() => {
-        this.router.navigate(['/registered']);
-        document.body.classList.remove('inverted-gradient');
-      }, 500);
-    } else {
-      console.log('Formulário inválido');
+
+      try {
+        const existingItems = await this.itemService.getItems().toPromise();
+        const itemExists = existingItems ? existingItems.some(item => item.username === formValue.username) : false;
+
+        if (itemExists) {
+          this.errorMessage = 'Item já cadastrado!';
+        } else {
+          await this.itemService.addItem(formValue);
+          this.router.navigate(['/registered']);
+        }
+      } catch (error) {
+        console.error('Erro ao cadastrar o item', error);
+        this.errorMessage = 'Erro ao cadastrar o item. Tente novamente.';
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 
