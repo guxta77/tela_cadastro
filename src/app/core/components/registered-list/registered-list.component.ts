@@ -5,7 +5,6 @@ import { BackButtonComponent } from '../back-button/back-button.component';
 import { Router } from '@angular/router';
 import { ItemService } from './services/item.service';
 import { Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registered-list',
@@ -40,9 +39,7 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.itemsSubscription.add(
-      this.items$.pipe(
-        map(items => this.items = items)
-      ).subscribe()
+      this.items$.subscribe(items => this.items = items)
     );
   }
 
@@ -86,6 +83,6 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   }
 
   goToInput(): void {
-    this.router.navigate(['/input']);
+    this.router.navigate(['/welcome']);
   }
 }

@@ -2,7 +2,7 @@
   <div class="registered-container">
     <h2>Itens Cadastrados</h2>
     <ul>
-      <li *ngFor="let item of (items$ | async); let i = index">
+      <li *ngFor="let item of items$ | async; let i = index">
         <div *ngIf="editingIndex === i">
           <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
             <input formControlName="username" placeholder="Usuário" />

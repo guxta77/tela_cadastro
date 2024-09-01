@@ -1,4 +1,3 @@
-// item.service.ts
 import { Injectable } from '@angular/core';
 import { Firestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../../../firebase-config';
