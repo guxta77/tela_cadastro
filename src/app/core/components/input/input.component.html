@@ -8,10 +8,8 @@
     <label for="password">Senha:</label>
     <div class="password-container">
       <input id="password" [type]="passwordType" formControlName="password" placeholder="Digite sua senha">
-      <div>
-        <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
-        <label for="showPassword">Mostrar senha</label>
-      </div>
+      <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
+      <label for="showPassword">Mostrar senha</label>
     </div>
   </div>
 
@@ -28,10 +26,6 @@
   <div>
     <label for="age">Idade:</label>
     <input id="age" formControlName="age" type="number" placeholder="Digite sua idade">
-    <div *ngIf="loginForm.get('age')?.invalid && loginForm.get('age')?.touched">
-      <small *ngIf="loginForm.get('age')?.errors?.['min']">Idade mínima é 16.</small>
-      <small *ngIf="loginForm.get('age')?.errors?.['max']">Idade máxima é 99.</small>
-    </div>
   </div>
 
   <div>
@@ -45,9 +39,6 @@
     </select>
   </div>
 
-  <button type="submit" [disabled]="!loginForm.valid || isSubmitting">Cadastrar</button>
-
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
+  <button type="submit" [disabled]="isSubmitting">Cadastrar</button>
+  <div *ngIf="errorMessage">{{ errorMessage }}</div>
 </form>

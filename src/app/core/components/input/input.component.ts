@@ -23,7 +23,7 @@ export class InputComponent implements OnInit {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', Validators.required],
       phone: ['', Validators.required],
       age: ['', [Validators.required, Validators.min(16), Validators.max(99)]],
       musicGenre: ['', Validators.required]
@@ -43,13 +43,18 @@ export class InputComponent implements OnInit {
 
       try {
         const existingItems = await this.itemService.getItems().toPromise();
-        const itemExists = existingItems ? existingItems.some(item => item.username === formValue.username) : false;
+        
+        if (existingItems) {
+          const itemExists = existingItems.some(item => item.username === formValue.username);
 
-        if (itemExists) {
-          this.errorMessage = 'Item já cadastrado!';
+          if (itemExists) {
+            this.errorMessage = 'Item já cadastrado!';
+          } else {
+            await this.itemService.addItem(formValue);
+            this.router.navigate(['/registered']);
+          }
         } else {
-          await this.itemService.addItem(formValue);
-          this.router.navigate(['/registered']);
+          this.errorMessage = 'Não foi possível verificar os itens existentes.';
         }
       } catch (error) {
         console.error('Erro ao cadastrar o item', error);
