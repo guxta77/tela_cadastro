@@ -1,31 +1,37 @@
 import { Injectable } from '@angular/core';
+import { Firestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { firestore } from '../../../../firebase-config';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemService {
-  private storageKey = 'items';
 
-  getItems(): any[] {
-    const items = localStorage.getItem(this.storageKey);
-    return items ? JSON.parse(items) : [];
+  private itemsCollection = collection(firestore, 'items');
+
+  constructor() {}
+
+  getItems(): Observable<any[]> {
+    return new Observable(observer => {
+      getDocs(this.itemsCollection).then(querySnapshot => {
+        const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        observer.next(items);
+      }).catch(error => observer.error(error));
+    });
   }
 
-  addItem(item: any): void {
-    const items = this.getItems();
-    items.push(item);
-    localStorage.setItem(this.storageKey, JSON.stringify(items));
+  addItem(item: any) {
+    return addDoc(this.itemsCollection, item);
   }
 
-  updateItem(index: number, item: any): void {
-    const items = this.getItems();
-    items[index] = item;
-    localStorage.setItem(this.storageKey, JSON.stringify(items));
+  updateItem(id: string, item: any) {
+    const itemDoc = doc(firestore, `items/${id}`);
+    return updateDoc(itemDoc, item);
   }
 
-  deleteItem(index: number): void {
-    const items = this.getItems();
-    items.splice(index, 1);
-    localStorage.setItem(this.storageKey, JSON.stringify(items));
+  deleteItem(id: string) {
+    const itemDoc = doc(firestore, `items/${id}`);
+    return deleteDoc(itemDoc);
   }
 }
