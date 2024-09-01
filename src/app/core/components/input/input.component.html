@@ -13,7 +13,7 @@
       <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
       <label for="showPassword">Mostrar senha</label>
     </div>
-  </div>  
+  </div>
 
   <div>
     <label for="email">Email:</label>
@@ -41,6 +41,7 @@
     </select>
   </div>
 
-  <button type="submit" [disabled]="isSubmitting">Cadastrar</button>
-  <div *ngIf="errorMessage">{{ errorMessage }}</div>
+  <button type="submit" [disabled]="loginForm.invalid || isSubmitting">Cadastrar</button>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  <button (click)="goToLogin()" class="back-button">Voltar para Login</button>
 </form>

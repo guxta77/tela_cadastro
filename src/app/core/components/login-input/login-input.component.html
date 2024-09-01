@@ -1,0 +1,16 @@
+<div class="login-container">
+    <h2>Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div>
+        <input formControlName="username" placeholder="Usuário" />
+      </div>
+      <div>
+        <input type="password" formControlName="password" placeholder="Senha" />
+      </div>
+      <button type="submit" class="submit-button">Entrar</button>
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+    </form>
+    <button (click)="goToRegister()" class="register-button">Cadastrar</button>
+  </div>
+  

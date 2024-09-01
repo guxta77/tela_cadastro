@@ -16,6 +16,7 @@ export class InputComponent implements OnInit {
   isSubmitting = false;
   passwordType: 'password' | 'text' = 'password';
   errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private router: Router, private itemService: ItemService) {}
 
@@ -30,7 +31,8 @@ export class InputComponent implements OnInit {
     });
 
     this.loginForm.valueChanges.subscribe(() => {
-      this.errorMessage = null; // Clear error message on value change
+      this.errorMessage = null;
+      this.successMessage = null;
     });
   }
 
@@ -38,12 +40,21 @@ export class InputComponent implements OnInit {
     if (this.loginForm.valid) {
       this.isSubmitting = true;
       this.errorMessage = null;
+      this.successMessage = null;
 
       const formValue = this.loginForm.value;
 
       try {
-        await this.itemService.addItem(formValue);
-        this.router.navigate(['/registered']);
+        await this.itemService.addItem({
+          username: formValue.username,
+          password: formValue.password,
+          email: formValue.email,
+          phone: formValue.phone,
+          age: formValue.age,
+          musicGenre: formValue.musicGenre
+        });
+        this.successMessage = 'Cadastro efetuado com sucesso';
+        this.loginForm.reset();
       } catch (error) {
         console.error('Erro ao cadastrar o item', error);
         this.errorMessage = 'Erro ao cadastrar o item. Tente novamente.';
@@ -56,5 +67,9 @@ export class InputComponent implements OnInit {
   togglePasswordVisibility(event: Event): void {
     const checkbox = event.target as HTMLInputElement;
     this.passwordType = checkbox.checked ? 'text' : 'password';
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }
