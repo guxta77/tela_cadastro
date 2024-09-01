@@ -5,7 +5,7 @@ import { BackButtonComponent } from '../back-button/back-button.component';
 import { Router } from '@angular/router';
 import { ItemService } from './services/item.service';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registered-list',
@@ -18,8 +18,11 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   items$: Observable<any[]>;
   editingIndex: number | null = null;
   editForm: FormGroup;
-  private itemsSubject = new BehaviorSubject<any[]>([]);
   private itemsSubscription: Subscription = new Subscription();
+  private itemsSubject = new BehaviorSubject<any[]>([]);
+
+  genres = ['Rock', 'Pop', 'Jazz', 'Clássica'];
+  passwordType: 'password' | 'text' = 'password';
 
   constructor(
     private fb: FormBuilder,
@@ -35,13 +38,13 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
       musicGenre: ['']
     });
 
-    this.items$ = this.itemsSubject.asObservable();
+    this.items$ = this.itemService.getItems();
   }
 
   ngOnInit(): void {
     this.itemsSubscription.add(
-      this.itemService.getItems().pipe(
-        tap(items => this.itemsSubject.next(items))
+      this.items$.pipe(
+        map(items => this.itemsSubject.next(items))
       ).subscribe()
     );
   }
@@ -52,37 +55,28 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
 
   startEdit(index: number): void {
     this.editingIndex = index;
-    this.items$.subscribe(items => {
-      const item = items[index];
-      if (item) {
-        this.editForm.patchValue(item);
-      }
-    });
+    this.editForm.patchValue(this.itemsSubject.getValue()[index]);
   }
 
   saveEdit(): void {
     if (this.editForm.valid && this.editingIndex !== null) {
       const updatedItem = this.editForm.value;
       const id = this.itemsSubject.getValue()[this.editingIndex]?.id;
-  
+
       if (id) {
         this.itemService.updateItem(id, updatedItem).then(() => {
           this.editingIndex = null;
           this.itemService.getItems().subscribe(items => {
-            this.itemsSubject.next(items); // Atualiza a lista com os itens atualizados
+            this.itemsSubject.next(items);
           });
         }).catch(error => {
           console.error('Error updating item:', error);
         });
-      } else {
-        console.error('Item id is missing');
       }
     } else {
       console.error('Form is invalid or editingIndex is null');
     }
   }
-  
-  
 
   cancelEdit(): void {
     this.editingIndex = null;
@@ -90,22 +84,23 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
 
   deleteItem(index: number): void {
     const id = this.itemsSubject.getValue()[index]?.id;
-    console.log('Deleting item with id:', id);
     if (id) {
       this.itemService.deleteItem(id).then(() => {
         this.itemService.getItems().subscribe(items => {
           this.itemsSubject.next(items);
-          console.log('Item deleted and list updated');
         });
       }).catch(error => {
         console.error('Error deleting item:', error);
       });
-    } else {
-      console.error('Item id is missing');
     }
   }
 
   goToInput(): void {
     this.router.navigate(['/welcome']);
+  }
+
+  togglePasswordVisibility(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    this.passwordType = checkbox.checked ? 'text' : 'password';
   }
 }

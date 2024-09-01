@@ -6,11 +6,16 @@
         <div *ngIf="editingIndex === i">
           <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
             <input formControlName="username" placeholder="Usuário" />
-            <input formControlName="password" placeholder="Senha" type="password" />
+            <div>
+              <input [type]="passwordType" formControlName="password" placeholder="Senha" />
+              <input type="checkbox" (change)="togglePasswordVisibility($event)" /> Mostrar senha
+            </div>
             <input formControlName="email" placeholder="Email" />
             <input formControlName="phone" placeholder="Telefone" />
             <input formControlName="age" placeholder="Idade" type="number" />
-            <input formControlName="musicGenre" placeholder="Gênero Musical" />
+            <select formControlName="musicGenre">
+              <option *ngFor="let genre of genres" [value]="genre">{{ genre }}</option>
+            </select>
             <button type="submit" class="edit-button">Salvar</button>
             <button type="button" (click)="cancelEdit()" class="edit-button">Cancelar</button>
           </form>
