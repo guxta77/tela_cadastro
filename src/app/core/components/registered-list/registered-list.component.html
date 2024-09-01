@@ -6,9 +6,12 @@
         <div *ngIf="editingIndex === i">
           <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
             <input formControlName="username" placeholder="Usuário" />
-            <div>
+            <div class="password-container">
               <input [type]="passwordType" formControlName="password" placeholder="Senha" />
-              <input type="checkbox" (change)="togglePasswordVisibility($event)" /> Mostrar senha
+              <div class="checkbox-group">
+                <input type="checkbox" (change)="togglePasswordVisibility($event)" />
+                <label>Mostrar senha</label>
+              </div>
             </div>
             <input formControlName="email" placeholder="Email" />
             <input formControlName="phone" placeholder="Telefone" />

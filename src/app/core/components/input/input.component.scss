@@ -24,26 +24,24 @@ input, select {
 }
 
 .password-container {
-  display: flex;
-  align-items: center;
-  position: relative;
+  margin-bottom: 10px;
 }
 
-.password-checkbox {
+.checkbox-group {
   display: flex;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-top: 5px;
 }
 
-.password-checkbox input[type="checkbox"] {
-  margin-right: 0.5rem;
+.checkbox-group input[type="checkbox"] {
   width: auto;
-  vertical-align: middle;
+  height: auto;
+  margin: 0
 }
 
-.password-checkbox label {
-  font-size: 0.875rem;
+.checkbox-group label {
   margin: 0;
+  padding-left: 5px;
 }
 
 button {
