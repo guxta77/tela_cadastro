@@ -45,7 +45,7 @@
     </select>
   </div>
 
-  <button type="submit" [disabled]="isSubmitDisabled || isSubmitting">Cadastrar</button>
+  <button type="submit" [disabled]="!loginForm.valid || isSubmitting">Cadastrar</button>
 
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}

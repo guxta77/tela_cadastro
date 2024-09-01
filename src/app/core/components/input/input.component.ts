@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ItemService } from '../registered-list/services/item.service';
@@ -13,25 +13,24 @@ import { ItemService } from '../registered-list/services/item.service';
 })
 export class InputComponent implements OnInit {
   loginForm!: FormGroup;
-  isSubmitDisabled = true;
-  passwordType: 'password' | 'text' = 'password';
   isSubmitting = false;
+  passwordType: 'password' | 'text' = 'password';
   errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private router: Router, private itemService: ItemService) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      username: [''],
-      password: [''],
-      email: [''],
-      phone: [''],
-      age: [''],
-      musicGenre: ['']
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      age: ['', [Validators.required, Validators.min(16), Validators.max(99)]],
+      musicGenre: ['', Validators.required]
     });
 
     this.loginForm.valueChanges.subscribe(() => {
-      this.isSubmitDisabled = !this.loginForm.valid;
+      this.errorMessage = null;
     });
   }
 
