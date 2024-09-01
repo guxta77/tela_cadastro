@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { BackButtonComponent } from '../back-button/back-button.component';
 import { Router } from '@angular/router';
 import { ItemService } from './services/item.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registered-list',
@@ -17,6 +18,7 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   items$: Observable<any[]>;
   editingIndex: number | null = null;
   editForm: FormGroup;
+  private itemsSubject = new BehaviorSubject<any[]>([]);
   private itemsSubscription: Subscription = new Subscription();
 
   constructor(
@@ -33,10 +35,16 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
       musicGenre: ['']
     });
 
-    this.items$ = this.itemService.getItems();
+    this.items$ = this.itemsSubject.asObservable();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.itemsSubscription.add(
+      this.itemService.getItems().pipe(
+        tap(items => this.itemsSubject.next(items))
+      ).subscribe()
+    );
+  }
 
   ngOnDestroy(): void {
     this.itemsSubscription.unsubscribe();
@@ -44,7 +52,6 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
 
   startEdit(index: number): void {
     this.editingIndex = index;
-    // Subscribe to items$ to get the current items
     this.items$.subscribe(items => {
       const item = items[index];
       if (item) {
@@ -56,10 +63,11 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   saveEdit(): void {
     if (this.editForm.valid && this.editingIndex !== null) {
       const updatedItem = this.editForm.value;
-      const id = this.editForm.value.id; // Obter o ID diretamente do formulário
+      const id = this.editForm.value.id;
       if (id) {
         this.itemService.updateItem(id, updatedItem).then(() => {
           this.editingIndex = null;
+          this.itemService.getItems().subscribe(items => this.itemsSubject.next(items));
         });
       }
     }
@@ -74,6 +82,7 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
       const id = items[index]?.id;
       if (id) {
         this.itemService.deleteItem(id).then(() => {
+          this.itemService.getItems().subscribe(items => this.itemsSubject.next(items));
         });
       }
     });
