@@ -30,7 +30,7 @@ export class InputComponent implements OnInit {
     });
 
     this.loginForm.valueChanges.subscribe(() => {
-      this.errorMessage = null;
+      this.errorMessage = null; // Clear error message on value change
     });
   }
 
@@ -42,20 +42,8 @@ export class InputComponent implements OnInit {
       const formValue = this.loginForm.value;
 
       try {
-        const existingItems = await this.itemService.getItems().toPromise();
-        
-        if (existingItems) {
-          const itemExists = existingItems.some(item => item.username === formValue.username);
-
-          if (itemExists) {
-            this.errorMessage = 'Item já cadastrado!';
-          } else {
-            await this.itemService.addItem(formValue);
-            this.router.navigate(['/registered']);
-          }
-        } else {
-          this.errorMessage = 'Não foi possível verificar os itens existentes.';
-        }
+        await this.itemService.addItem(formValue);
+        this.router.navigate(['/registered']);
       } catch (error) {
         console.error('Erro ao cadastrar o item', error);
         this.errorMessage = 'Erro ao cadastrar o item. Tente novamente.';
