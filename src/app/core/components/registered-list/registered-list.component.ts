@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BackButtonComponent } from '../back-button/back-button.component';
 import { Router } from '@angular/router';
+import { ItemService } from './services/item.service';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registered-list',
@@ -11,12 +14,18 @@ import { Router } from '@angular/router';
   templateUrl: './registered-list.component.html',
   styleUrls: ['./registered-list.component.scss']
 })
-export class RegisteredListComponent {
-  items: any[] = [];
+export class RegisteredListComponent implements OnInit, OnDestroy {
+  items$: Observable<any[]>;
   editingIndex: number | null = null;
   editForm: FormGroup;
+  private itemsSubscription: Subscription = new Subscription();
+  private items: any[] = [];
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private itemService: ItemService
+  ) {
     this.editForm = this.fb.group({
       username: [''],
       password: [''],
@@ -25,6 +34,20 @@ export class RegisteredListComponent {
       age: [''],
       musicGenre: ['']
     });
+
+    this.items$ = this.itemService.getItems();
+  }
+
+  ngOnInit(): void {
+    this.itemsSubscription.add(
+      this.items$.pipe(
+        map(items => this.items = items)
+      ).subscribe()
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.itemsSubscription.unsubscribe();
   }
 
   startEdit(index: number): void {
@@ -34,8 +57,16 @@ export class RegisteredListComponent {
 
   saveEdit(): void {
     if (this.editForm.valid && this.editingIndex !== null) {
-      this.items[this.editingIndex] = this.editForm.value;
-      this.editingIndex = null;
+      const updatedItem = this.editForm.value;
+      const id = this.items[this.editingIndex]?.id;
+      if (id) {
+        this.itemService.updateItem(id, updatedItem).then(() => {
+          this.editingIndex = null;
+          this.itemService.getItems().subscribe(updatedItems => {
+            this.items = updatedItems;
+          });
+        });
+      }
     }
   }
 
@@ -44,7 +75,14 @@ export class RegisteredListComponent {
   }
 
   deleteItem(index: number): void {
-    this.items.splice(index, 1);
+    const id = this.items[index]?.id;
+    if (id) {
+      this.itemService.deleteItem(id).then(() => {
+        this.itemService.getItems().subscribe(updatedItems => {
+          this.items = updatedItems;
+        });
+      });
+    }
   }
 
   goToInput(): void {
