@@ -63,15 +63,18 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   saveEdit(): void {
     if (this.editForm.valid && this.editingIndex !== null) {
       const updatedItem = this.editForm.value;
-      const id = this.editForm.value.id;
+      const id = this.itemsSubject.getValue()[this.editingIndex]?.id;
       if (id) {
         this.itemService.updateItem(id, updatedItem).then(() => {
           this.editingIndex = null;
           this.itemService.getItems().subscribe(items => this.itemsSubject.next(items));
+        }).catch(error => {
+          console.error('Error updating item:', error);
         });
       }
     }
   }
+  
 
   cancelEdit(): void {
     this.editingIndex = null;
