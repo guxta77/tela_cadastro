@@ -8,8 +8,10 @@
     <label for="password">Senha:</label>
     <div class="password-container">
       <input id="password" [type]="passwordType" formControlName="password" placeholder="Digite sua senha">
-      <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
-      <label for="showPassword">Mostrar senha</label>
+      <div>
+        <input type="checkbox" id="showPassword" (change)="togglePasswordVisibility($event)">
+        <label for="showPassword">Mostrar senha</label>
+      </div>
     </div>
   </div>
 
