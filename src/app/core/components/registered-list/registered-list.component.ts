@@ -64,16 +64,24 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
     if (this.editForm.valid && this.editingIndex !== null) {
       const updatedItem = this.editForm.value;
       const id = this.itemsSubject.getValue()[this.editingIndex]?.id;
+  
       if (id) {
         this.itemService.updateItem(id, updatedItem).then(() => {
           this.editingIndex = null;
-          this.itemService.getItems().subscribe(items => this.itemsSubject.next(items));
+          this.itemService.getItems().subscribe(items => {
+            this.itemsSubject.next(items); // Atualiza a lista com os itens atualizados
+          });
         }).catch(error => {
           console.error('Error updating item:', error);
         });
+      } else {
+        console.error('Item id is missing');
       }
+    } else {
+      console.error('Form is invalid or editingIndex is null');
     }
   }
+  
   
 
   cancelEdit(): void {
@@ -81,14 +89,20 @@ export class RegisteredListComponent implements OnInit, OnDestroy {
   }
 
   deleteItem(index: number): void {
-    this.items$.subscribe(items => {
-      const id = items[index]?.id;
-      if (id) {
-        this.itemService.deleteItem(id).then(() => {
-          this.itemService.getItems().subscribe(items => this.itemsSubject.next(items));
+    const id = this.itemsSubject.getValue()[index]?.id;
+    console.log('Deleting item with id:', id);
+    if (id) {
+      this.itemService.deleteItem(id).then(() => {
+        this.itemService.getItems().subscribe(items => {
+          this.itemsSubject.next(items);
+          console.log('Item deleted and list updated');
         });
-      }
-    });
+      }).catch(error => {
+        console.error('Error deleting item:', error);
+      });
+    } else {
+      console.error('Item id is missing');
+    }
   }
 
   goToInput(): void {
