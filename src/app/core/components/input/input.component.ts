@@ -21,6 +21,8 @@ export class InputComponent implements OnInit {
   constructor(private fb: FormBuilder, private router: Router, private itemService: ItemService) {}
 
   ngOnInit(): void {
+    this.itemService.logout();
+
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
@@ -70,6 +72,7 @@ export class InputComponent implements OnInit {
   }
 
   goToLogin(): void {
+    this.itemService.logout();
     this.router.navigate(['/login']);
   }
 }
